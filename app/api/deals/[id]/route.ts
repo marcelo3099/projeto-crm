@@ -6,9 +6,10 @@ import { auth } from '@/auth';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth();
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -23,7 +24,7 @@ export async function PATCH(
                 ...(notes !== undefined && { notes }),
                 updatedAt: new Date(),
             })
-            .where(eq(deals.id, parseInt(params.id)))
+            .where(eq(deals.id, parseInt(id)))
             .returning();
 
         return NextResponse.json(updated[0]);
@@ -35,13 +36,14 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth();
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        await db.delete(deals).where(eq(deals.id, parseInt(params.id)));
+        await db.delete(deals).where(eq(deals.id, parseInt(id)));
 
         return NextResponse.json({ success: true });
     } catch (error) {

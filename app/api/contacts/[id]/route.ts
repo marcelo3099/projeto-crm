@@ -6,13 +6,14 @@ import { auth } from '@/auth';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth();
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const [contact] = await db.select().from(contacts).where(eq(contacts.id, parseInt(params.id))).limit(1);
+        const [contact] = await db.select().from(contacts).where(eq(contacts.id, parseInt(id))).limit(1);
 
         if (!contact) {
             return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
@@ -27,9 +28,10 @@ export async function GET(
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth();
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -38,7 +40,7 @@ export async function PATCH(
 
         const updated = await db.update(contacts)
             .set({ name, email, phone, company, updatedAt: new Date() })
-            .where(eq(contacts.id, parseInt(params.id)))
+            .where(eq(contacts.id, parseInt(id)))
             .returning();
 
         return NextResponse.json(updated[0]);
@@ -50,13 +52,14 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await auth();
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        await db.delete(contacts).where(eq(contacts.id, parseInt(params.id)));
+        await db.delete(contacts).where(eq(contacts.id, parseInt(id)));
 
         return NextResponse.json({ success: true });
     } catch (error) {

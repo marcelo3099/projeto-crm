@@ -6,12 +6,13 @@ import { eq } from 'drizzle-orm';
 // Public endpoint - no auth required
 export async function GET(
     request: Request,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
+        const { slug } = await params;
         const [article] = await db.select()
             .from(knowledgeArticles)
-            .where(eq(knowledgeArticles.slug, params.slug))
+            .where(eq(knowledgeArticles.slug, slug))
             .limit(1);
 
         if (!article) {
