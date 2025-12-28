@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { DollarSign, User, MapPin, Home, Building2, LandPlot, PlusCircle } from 'lucide-react';
+import EditDealModal from './EditDealModal';
 
 interface Stage {
     id: number;
@@ -36,6 +37,8 @@ export default function DealsKanban() {
     const [stages, setStages] = useState<Stage[]>([]);
     const [loading, setLoading] = useState(true);
     const [draggedDealId, setDraggedDealId] = useState<number | null>(null);
+    const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         fetchDeals();
@@ -142,7 +145,11 @@ export default function DealsKanban() {
                                         key={deal.deal.id}
                                         draggable
                                         onDragStart={(e) => handleDragStart(e, deal.deal.id)}
-                                        className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-grab active:cursor-grabbing ${draggedDealId === deal.deal.id ? 'opacity-50 border-blue-300 border-dashed' : ''
+                                        onClick={() => {
+                                            setSelectedDeal(deal);
+                                            setIsEditModalOpen(true);
+                                        }}
+                                        className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-200 transition cursor-grab active:cursor-grabbing ${draggedDealId === deal.deal.id ? 'opacity-50 border-blue-300 border-dashed' : ''
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
@@ -212,6 +219,16 @@ export default function DealsKanban() {
                     </div>
                 );
             })}
+
+            <EditDealModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedDeal(null);
+                }}
+                onSuccess={fetchDeals}
+                deal={selectedDeal}
+            />
         </div>
     );
 }
