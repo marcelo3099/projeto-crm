@@ -48,7 +48,7 @@ export default function LeadForm({ onLeadAdded }: { onLeadAdded: () => void }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
                 <h2 className="text-xl font-bold mb-4">Novo Lead</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

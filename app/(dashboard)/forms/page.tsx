@@ -50,14 +50,14 @@ export default function FormsPage() {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Formulários</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Formulários</h1>
                     <p className="text-gray-600 mt-1">Crie e gerencie seus formulários de captação</p>
                 </div>
                 <Link
                     href="/forms/new"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                    className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
                 >
                     <Plus size={20} />
                     Novo Formulário
@@ -78,46 +78,49 @@ export default function FormsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {forms.map((form) => (
                         <div
                             key={form.id}
-                            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
+                            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition flex flex-col justify-between"
                         >
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-lg font-semibold text-gray-900">{form.name}</h3>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${form.isActive
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-gray-100 text-gray-700'
-                                            }`}>
-                                            {form.isActive ? 'Ativo' : 'Inativo'}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 font-mono">/f/{form.slug}</p>
+                            <div className="mb-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-lg font-semibold text-gray-900 truncate">{form.name}</h3>
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${form.isActive
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                        {form.isActive ? 'Ativo' : 'Inativo'}
+                                    </span>
                                 </div>
+                                <p className="text-sm text-gray-500 font-mono truncate">/f/{form.slug}</p>
+                            </div>
 
-                                <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                                <p className="text-[10px] text-gray-400">
+                                    {new Date(form.createdAt).toLocaleDateString('pt-BR')}
+                                </p>
+                                <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => copyFormLink(form.slug)}
                                         className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                         title="Copiar Link"
                                     >
-                                        <LinkIcon size={20} />
+                                        <LinkIcon size={18} />
                                     </button>
                                     <Link
                                         href={`/forms/${form.id}`}
                                         className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                         title="Editar"
                                     >
-                                        <Settings size={20} />
+                                        <Settings size={18} />
                                     </Link>
                                     <button
                                         className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                         title="Deletar"
                                     >
-                                        <Trash2 size={20} />
+                                        <Trash2 size={18} />
                                     </button>
                                 </div>
                             </div>
