@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DollarSign, User } from 'lucide-react';
+import { DollarSign, User, MapPin, Home, Building2, LandPlot, PlusCircle } from 'lucide-react';
 
 interface Stage {
     id: number;
@@ -23,6 +23,9 @@ interface Deal {
         value: number;
         notes?: string;
         stageId: number;
+        location?: string;
+        propertyType?: string;
+        dealStatus?: string;
     };
     contact: Contact | null;
     stage: Stage | null;
@@ -142,21 +145,58 @@ export default function DealsKanban() {
                                         className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-grab active:cursor-grabbing ${draggedDealId === deal.deal.id ? 'opacity-50 border-blue-300 border-dashed' : ''
                                             }`}
                                     >
-                                        <h4 className="font-medium text-gray-900 mb-2">{deal.deal.title}</h4>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="font-semibold text-gray-900 line-clamp-2 flex-1">{deal.deal.title}</h4>
+                                            {deal.deal.dealStatus && (
+                                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ml-2 ${deal.deal.dealStatus === 'AVAILABLE' ? 'bg-green-100 text-green-700' :
+                                                    deal.deal.dealStatus === 'RESERVED' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-gray-100 text-gray-700'
+                                                    }`}>
+                                                    {deal.deal.dealStatus === 'AVAILABLE' ? 'Disp.' : deal.deal.dealStatus === 'RESERVED' ? 'Resv.' : 'Vendido'}
+                                                </span>
+                                            )}
+                                        </div>
 
-                                        {deal.contact && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                                                <User size={14} />
-                                                <span>{deal.contact.name}</span>
+                                        <div className="space-y-2 mb-3">
+                                            {deal.deal.location && (
+                                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                    <MapPin size={12} />
+                                                    <span className="truncate">{deal.deal.location}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                {deal.deal.propertyType === 'APARTMENT' ? <Home size={12} /> :
+                                                    deal.deal.propertyType === 'HOUSE' ? <Home size={12} /> :
+                                                        deal.deal.propertyType === 'COMERCIAL' ? <Building2 size={12} /> :
+                                                            <LandPlot size={12} />}
+                                                <span>{deal.deal.propertyType === 'APARTMENT' ? 'Apartamento' :
+                                                    deal.deal.propertyType === 'HOUSE' ? 'Casa' :
+                                                        deal.deal.propertyType === 'COMERCIAL' ? 'Comercial' : 'Terreno'}</span>
                                             </div>
-                                        )}
+                                        </div>
 
-                                        {deal.deal.value > 0 && (
-                                            <div className="flex items-center gap-2 text-sm font-medium text-green-600">
-                                                <DollarSign size={14} />
-                                                <span>R$ {(deal.deal.value / 100).toFixed(2)}</span>
-                                            </div>
-                                        )}
+                                        <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
+                                            {deal.contact ? (
+                                                <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+                                                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                                                        <User size={12} />
+                                                    </div>
+                                                    <span className="truncate">{deal.contact.name}</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2 text-sm text-gray-400 italic">
+                                                    <PlusCircle size={14} />
+                                                    <span>Aguardando interessado</span>
+                                                </div>
+                                            )}
+
+                                            {deal.deal.value > 0 && (
+                                                <div className="flex items-center gap-2 text-sm font-bold text-blue-600">
+                                                    <DollarSign size={14} />
+                                                    <span>R$ {(deal.deal.value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
 

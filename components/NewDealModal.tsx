@@ -15,6 +15,8 @@ export default function NewDealModal({ isOpen, onClose, onSuccess }: NewDealModa
     const [value, setValue] = useState('');
     const [pipelineId, setPipelineId] = useState('');
     const [stageId, setStageId] = useState('');
+    const [location, setLocation] = useState('');
+    const [propertyType, setPropertyType] = useState('APARTMENT');
     const [notes, setNotes] = useState('');
 
     interface Contact { id: number; name: string; }
@@ -64,10 +66,12 @@ export default function NewDealModal({ isOpen, onClose, onSuccess }: NewDealModa
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title,
-                    contactId: parseInt(contactId),
+                    contactId: contactId ? parseInt(contactId) : null,
                     pipelineId: parseInt(pipelineId),
                     stageId: parseInt(stageId),
                     value: value ? parseFloat(value.replace(',', '.')) * 100 : 0, // Convert to cents
+                    location,
+                    propertyType,
                     notes
                 }),
             });
@@ -113,18 +117,43 @@ export default function NewDealModal({ isOpen, onClose, onSuccess }: NewDealModa
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Cliente (Opcional)</label>
                         <select
-                            required
                             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
                             value={contactId}
                             onChange={e => setContactId(e.target.value)}
                         >
-                            <option value="">Selecione um cliente...</option>
+                            <option value="">Aguardando interessado...</option>
                             {contacts.map(contact => (
                                 <option key={contact.id} value={contact.id}>{contact.name}</option>
                             ))}
                         </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Localização</label>
+                            <input
+                                type="text"
+                                placeholder="Ex: Jardins, SP"
+                                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                                value={location}
+                                onChange={e => setLocation(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Imóvel</label>
+                            <select
+                                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                                value={propertyType}
+                                onChange={e => setPropertyType(e.target.value)}
+                            >
+                                <option value="APARTMENT">Apartamento</option>
+                                <option value="HOUSE">Casa</option>
+                                <option value="COMERCIAL">Comercial</option>
+                                <option value="LAND">Terreno</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

@@ -39,18 +39,20 @@ export async function POST(request: Request) {
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await request.json();
-        const { title, contactId, pipelineId, stageId, value, notes } = body;
+        const { title, contactId, pipelineId, stageId, value, notes, location, propertyType } = body;
 
-        if (!title || !contactId || !pipelineId || !stageId) {
+        if (!title || !pipelineId || !stageId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
         const newDeal = await db.insert(deals).values({
             title,
-            contactId,
+            contactId: contactId || null,
             pipelineId,
             stageId,
             value: value || 0,
+            location,
+            propertyType,
             notes,
             createdBy: session.user.id ? parseInt(session.user.id) : undefined,
         }).returning();

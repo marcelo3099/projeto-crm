@@ -43,14 +43,17 @@ export const stages = pgTable('stages', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-// ========== DEALS ==========
+// ========== DEALS (NOW PROPERTY-CENTRIC) ==========
 export const deals = pgTable('deals', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
-  contactId: integer('contact_id').notNull().references(() => contacts.id, { onDelete: 'cascade' }),
+  contactId: integer('contact_id').references(() => contacts.id, { onDelete: 'set null' }),
   pipelineId: integer('pipeline_id').notNull().references(() => pipelines.id),
   stageId: integer('stage_id').notNull().references(() => stages.id),
   value: integer('value').default(0),
+  location: text('location'),
+  propertyType: varchar('property_type', { length: 50 }),
+  dealStatus: varchar('deal_status', { length: 20 }).default('AVAILABLE'),
   notes: text('notes'),
   createdBy: integer('created_by').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
