@@ -1,0 +1,27 @@
+# ===== VARIÁVEIS DE AMBIENTE PARA VERCEL (ATUALIZADAS) =====
+# Copie cada variável abaixo e atualize na Vercel (Settings > Environment Variables)
+# IMPORTANTE: Após atualizar, faça um Redeploy!
+
+# ⚠️ CONEXÃO DIRETA COM SUPABASE (Nova Senha)
+DATABASE_URL=postgresql://postgres:vdVi6vQNILZ20kht@db.hyqxiygapyhxsxjrscph.supabase.co:5432/postgres
+
+# Segredo para NextAuth (autenticação)
+AUTH_SECRET=9cb8d7f6e5a4b3c2d1e0f9g8h7i6j5k4l3m2n1o0
+
+# Chave secreta para webhooks
+API_SECRET_KEY=crm_super_secret_key_2025
+
+# URLs do Supabase (para client-side)
+NEXT_PUBLIC_SUPABASE_URL=https://hyqxiygapyhxsxjrscph.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_wYNauSXNUlyF0yPzXfA3OQ_6WmyUO9F
+
+# URL da aplicação (atualize para seu domínio final)
+NEXT_PUBLIC_APP_URL=https://projeto-crm-neon.vercel.app
+
+# ===== INSTRUÇÕES =====
+# 1. Na Vercel, vá em Settings > Environment Variables
+# 2. Edite a DATABASE_URL e cole a nova URL acima
+# 3. Salve as mudanças
+# 4. Vá em Deployments > ... (três pontos) > Redeploy
+# 5. Aguarde o deploy finalizar
+# 6. Teste acessando /api/health para verificar a conexão

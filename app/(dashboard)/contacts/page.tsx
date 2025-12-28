@@ -22,7 +22,18 @@ export default function ContactsPage() {
         fetch('/api/contacts')
             .then(res => res.json())
             .then(data => {
-                setContacts(data);
+                // Ensure data is always an array to prevent map errors
+                if (Array.isArray(data)) {
+                    setContacts(data);
+                } else {
+                    console.error('API returned non-array data:', data);
+                    setContacts([]);
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Failed to fetch contacts:', err);
+                setContacts([]);
                 setLoading(false);
             });
     }, []);

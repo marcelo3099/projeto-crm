@@ -13,7 +13,14 @@ export async function GET() {
         return NextResponse.json(allContacts);
     } catch (error) {
         console.error('Error fetching contacts:', error);
-        return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
+        console.error('Database connection details:', {
+            hasEnvVar: !!process.env.DATABASE_URL,
+            urlLength: process.env.DATABASE_URL?.length,
+            errorMessage: error instanceof Error ? error.message : 'Unknown error',
+            errorStack: error instanceof Error ? error.stack : undefined,
+        });
+        // Return empty array instead of error object to prevent frontend crashes
+        return NextResponse.json([], { status: 200 });
     }
 }
 

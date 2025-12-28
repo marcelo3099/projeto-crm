@@ -18,7 +18,7 @@ function createClient(): Sql {
     if (!client) {
         client = postgres(getConnectionString(), {
             ssl: 'require',
-            max: 1, // Serverless optimization
+            max: 1, // Serverless optimization: single connection per instance
             idle_timeout: 20,
             connect_timeout: 10,
         });
