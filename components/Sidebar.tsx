@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Settings, LogOut, Users, FileText } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, Users, FileText, HelpCircle } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
 const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/contacts', label: 'Contatos', icon: Users },
     { href: '/forms', label: 'Formulários', icon: FileText },
+    { href: '/faq', label: 'Central de Ajuda', icon: HelpCircle },
     { href: '/integrations', label: 'Integrações', icon: Settings },
 ];
 

@@ -19,6 +19,7 @@ export const contacts = pgTable('contacts', {
   phone: text('phone'),
   company: text('company'),
   source: varchar('source', { length: 50 }).notNull().default('MANUAL'),
+  preferences: text('preferences'), // JSON: { propertyType, maxPrice, minArea, minBedrooms, etc }
   createdBy: integer('created_by').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -54,6 +55,13 @@ export const deals = pgTable('deals', {
   location: text('location'),
   propertyType: varchar('property_type', { length: 50 }),
   dealStatus: varchar('deal_status', { length: 20 }).default('AVAILABLE'),
+  area: integer('area'), // in m2
+  bedrooms: integer('bedrooms'),
+  bathrooms: integer('bathrooms'),
+  suites: integer('suites'),
+  parkingSpots: integer('parking_spots'),
+  features: text('features'), // JSON or comma-separated list
+  images: text('images'), // JSON list of URLs
   notes: text('notes'),
   createdBy: integer('created_by').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),

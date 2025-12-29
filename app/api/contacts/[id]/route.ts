@@ -36,10 +36,17 @@ export async function PATCH(
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await request.json();
-        const { name, email, phone, company } = body;
+        const { name, email, phone, company, preferences } = body;
 
         const updated = await db.update(contacts)
-            .set({ name, email, phone, company, updatedAt: new Date() })
+            .set({
+                name,
+                email,
+                phone,
+                company,
+                ...(preferences !== undefined && { preferences }),
+                updatedAt: new Date()
+            })
             .where(eq(contacts.id, parseInt(id)))
             .returning();
 

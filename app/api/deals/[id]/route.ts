@@ -14,7 +14,10 @@ export async function PATCH(
         if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await request.json();
-        const { title, stageId, value, notes, location, propertyType, contactId, dealStatus } = body;
+        const {
+            title, stageId, value, notes, location, propertyType, contactId, dealStatus,
+            area, bedrooms, bathrooms, suites, parkingSpots, features, images
+        } = body;
 
         const updated = await db.update(deals)
             .set({
@@ -26,6 +29,13 @@ export async function PATCH(
                 ...(propertyType !== undefined && { propertyType }),
                 ...(contactId !== undefined && { contactId }),
                 ...(dealStatus !== undefined && { dealStatus }),
+                ...(area !== undefined && { area }),
+                ...(bedrooms !== undefined && { bedrooms }),
+                ...(bathrooms !== undefined && { bathrooms }),
+                ...(suites !== undefined && { suites }),
+                ...(parkingSpots !== undefined && { parkingSpots }),
+                ...(features !== undefined && { features }),
+                ...(images !== undefined && { images }),
                 updatedAt: new Date(),
             })
             .where(eq(deals.id, parseInt(id)))

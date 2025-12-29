@@ -53,9 +53,10 @@ export async function POST(
         }
 
         const body = await request.json();
-        const submissionData = body.data; // Object with all form data
+        const submissionData = body.data;
+        const dealId = body.dealId; // Capture optional dealId from request
 
-        // Extract contact info (assuming specific field keys)
+        // Extract contact info
         const contactName = submissionData.name || submissionData.nome;
         const contactEmail = submissionData.email;
         const contactPhone = submissionData.phone || submissionData.whatsapp || submissionData.telefone;
@@ -79,44 +80,56 @@ export async function POST(
             contact = newContact;
         }
 
-        // 2. Get first stage of the pipeline
-        const [firstStage] = await db.select()
-            .from(stages)
-            .where(eq(stages.pipelineId, form.pipelineId))
-            .orderBy(stages.order)
-            .limit(1);
-
-        if (!firstStage) {
-            return NextResponse.json({ error: 'Pipeline not configured properly' }, { status: 500 });
+        // 2. Fetch existing deal if dealId is provided
+        let existingDeal = null;
+        if (dealId) {
+            [existingDeal] = await db.select().from(deals).where(eq(deals.id, parseInt(dealId.toString()))).limit(1);
         }
 
-        // 3. Create deal
-        const dealTitle = `${form.name} - ${contactName}`;
-        const dealNotes = Object.entries(submissionData)
-            .filter(([key]) => !['name', 'nome', 'email', 'phone', 'whatsapp', 'telefone'].includes(key))
-            .map(([key, value]) => `${key}: ${value}`)
-            .join('\n');
+        // 3. Handle Deal logic
+        let targetDealId = existingDeal?.id;
 
-        const [newDeal] = await db.insert(deals).values({
-            title: dealTitle,
-            contactId: contact.id,
-            pipelineId: form.pipelineId,
-            stageId: firstStage.id,
-            notes: dealNotes || null,
-        }).returning();
+        if (existingDeal) {
+            // Update existing property deal with lead info if it doesn't have a contact yet
+            if (!existingDeal.contactId) {
+                await db.update(deals).set({ contactId: contact.id }).where(eq(deals.id, existingDeal.id));
+            }
+            // Add note about the new interest
+            const currentNotes = existingDeal.notes || '';
+            const newInterestNote = `\n--- Novo Interesse via Formulário (${new Date().toLocaleDateString()}) ---\n${JSON.stringify(submissionData, null, 2)}`;
+            await db.update(deals).set({ notes: currentNotes + newInterestNote }).where(eq(deals.id, existingDeal.id));
+        } else {
+            // Create a new generic deal for the form submission
+            const [firstStage] = await db.select()
+                .from(stages)
+                .where(eq(stages.pipelineId, form.pipelineId))
+                .orderBy(stages.order)
+                .limit(1);
+
+            if (firstStage) {
+                const [newDeal] = await db.insert(deals).values({
+                    title: `${form.name} - ${contactName}`,
+                    contactId: contact.id,
+                    pipelineId: form.pipelineId,
+                    stageId: firstStage.id,
+                    notes: JSON.stringify(submissionData),
+                }).returning();
+                targetDealId = newDeal.id;
+            }
+        }
 
         // 4. Save submission
         await db.insert(formSubmissions).values({
             formId: form.id,
             contactId: contact.id,
-            dealId: newDeal.id,
+            dealId: targetDealId || null,
             data: JSON.stringify(submissionData),
         });
 
         return NextResponse.json({
             success: true,
             contactId: contact.id,
-            dealId: newDeal.id,
+            dealId: targetDealId,
             message: 'Formulário enviado com sucesso!'
         });
     } catch (error) {
